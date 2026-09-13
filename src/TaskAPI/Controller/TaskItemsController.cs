@@ -5,7 +5,7 @@ using TaskAPI.Models;
 using RabbitMQ.Client;
 using System.Text;
 using Microsoft.AspNetCore.SignalR;
-using TaskAPI.Hubs
+using TaskAPI.Hubs;
 
 namespace TaskAPI.Controllers
 {
