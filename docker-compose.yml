@@ -65,6 +65,16 @@ services:
     networks:
       - n_task_network
 
+  c_notification_service:
+    build:
+      context: ./src/NotificationService
+      dockerfile: Dockerfile
+    container_name: c_notification_service
+    depends_on:
+      - c_rabbitmq
+    networks:
+      - n_task_network    
+
 networks:
   n_task_network:
     name: n_task_network

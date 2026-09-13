@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TaskAPI.Data;
 using TaskAPI.Models;
+using RabbitMQ.Client;
+using System.Text;
 
 namespace TaskAPI.Controllers
 {
@@ -41,6 +43,32 @@ namespace TaskAPI.Controllers
 
             _context.TaskItems.Add(taskItem);
             await _context.SaveChangesAsync();
+
+            // --- RABBITMQ MESAJ GÖNDERME BAŞLANGICI ---
+            try
+            {
+                // Docker içindeki RabbitMQ servisimizin adı: c_rabbitmq
+                var factory = new ConnectionFactory() { HostName = "c_rabbitmq" };
+                using (var connection = factory.CreateConnection())
+                using (var channel = connection.CreateModel())
+                {
+                    // 'task_queue' adında bir kuyruk oluştur (eğer yoksa)
+                    channel.QueueDeclare(queue: "task_queue", durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+                    // Gönderilecek mesajı hazırla
+                    string message = $"Yeni Görev Eklendi: {taskItem.Title}";
+                    var body = Encoding.UTF8.GetBytes(message);
+
+                    // Mesajı kuyruğa fırlat
+                    channel.BasicPublish(exchange: "", routingKey: "task_queue", basicProperties: null, body: body);
+                }
+            }
+            catch (Exception ex)
+            {
+                // RabbitMQ çökerse ana API hata vermesin, sadece loglasın diye Try-Catch içine aldık
+                Console.WriteLine($"RabbitMQ Hatası: {ex.Message}");
+            }
+            // --- RABBITMQ MESAJ GÖNDERME BİTİŞİ ---
 
             return Ok(taskItem);
         }
