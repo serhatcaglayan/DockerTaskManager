@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TaskAPI.Data;
-
+using TaskAPI.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 // Veritabanı bağlantısı
@@ -16,15 +16,15 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// CORS Ayarları: Şimdilik geliştirme ortamında olduğumuz için her şeye izin veriyoruz (AllowAnyOrigin)
+
+builder.Services.AddSignalR();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin()    // Herhangi bir adresten (IP/Port) gelen isteklere izin ver
-              .AllowAnyHeader()    // Her türlü başlığa (Header) izin ver
-              .AllowAnyMethod();   // Bütün HTTP metodlarına (GET, POST, PUT, DELETE) izin ver
-    });
+    options.AddPolicy("CorsPolicy", builder => builder
+        .SetIsOriginAllowed((host) => true) // Eğitim ortamı için her yere açık
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials());
 });
 
 var app = builder.Build();
@@ -45,9 +45,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
+app.UseCors("CorsPolicy");
 
 
-app.MapControllers(); 
-
+app.MapControllers();
+app.MapHub<NotificationHub>("/notifications");
 app.Run();

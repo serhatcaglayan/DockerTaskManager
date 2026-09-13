@@ -120,3 +120,19 @@ async function addTask(projectId) {
     // Listeyi yenilemek için gizlice 'Verileri Getir' butonuna tıkla
     document.getElementById('loadBtn').click(); 
 }
+
+// 1. Köprüye (Hub) bağlan
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("http://localhost:8080/notifications")
+    .build();
+
+// 2. Sunucudan "ReceiveNotification" sinyali gelirse ne yapacağını söyle
+connection.on("ReceiveNotification", (message) => {
+    alert("🔥 CANLI BİLDİRİM: " + message);
+    // İstersen burada sayfayı yenilemeden görev listesini tekrar getiren fonksiyonunu çağırabilirsin!
+});
+
+// 3. Bağlantıyı başlat
+connection.start()
+    .then(() => console.log("SignalR Canlı Bağlantısı Başarılı!"))
+    .catch(err => console.error("SignalR Hatası:", err));

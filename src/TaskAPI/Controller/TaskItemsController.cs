@@ -4,6 +4,8 @@ using TaskAPI.Data;
 using TaskAPI.Models;
 using RabbitMQ.Client;
 using System.Text;
+using Microsoft.AspNetCore.SignalR;
+using TaskAPI.Hubs
 
 namespace TaskAPI.Controllers
 {
@@ -12,10 +14,12 @@ namespace TaskAPI.Controllers
     public class TaskItemsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext; 
 
         public TaskItemsController(AppDbContext context)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // GET: api/taskitems/project/5 (Belirli bir projeye ait görevleri getirir)
@@ -69,6 +73,9 @@ namespace TaskAPI.Controllers
                 Console.WriteLine($"RabbitMQ Hatası: {ex.Message}");
             }
             // --- RABBITMQ MESAJ GÖNDERME BİTİŞİ ---
+
+            // Tüm bağlı tarayıcılara "ReceiveNotification" adıyla canlı bir olay fırlat
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", $"Yeni Görev Sistemde: {taskItem.Title}");
 
             return Ok(taskItem);
         }
