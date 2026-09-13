@@ -1,0 +1,30 @@
+name: .NET CI Pipeline
+
+# Bu pipeline hangi durumlarda tetiklenecek? (main veya master dalına kod geldiğinde)
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest # GitHub'ın bize tahsis edeceği sanal makinenin işletim sistemi
+
+    steps:
+    - name: Kodu Çek (Checkout)
+      uses: actions/checkout@v4
+
+    - name: .NET 8 Kurulumu
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Bağımlılıkları Yükle (Restore)
+      run: dotnet restore src/TaskAPI.Tests/TaskAPI.Tests.csproj
+
+    - name: Projeyi Derle (Build)
+      run: dotnet build src/TaskAPI.Tests/TaskAPI.Tests.csproj --no-restore
+
+    - name: Testleri Çalıştır (Test)
+      run: dotnet test src/TaskAPI.Tests/TaskAPI.Tests.csproj --no-build --verbosity normal
