@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Görev Yöneticisi</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background-color: #f9f9f9; }
+        h1 { color: #333; text-align: center; }
+        button { background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; display: block; margin: 0 auto 20px; }
+        button:hover { background-color: #0056b3; }
+        .project-card { background: white; border: 1px solid #ddd; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .project-title { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .task-list { list-style-type: none; padding-left: 0; }
+        .task-item { background: #f8f9fa; margin-bottom: 5px; padding: 8px 12px; border-radius: 4px; border-left: 3px solid #17a2b8; }
+    </style>
+</head>
+<body>
+
+    <h1>Projelerim</h1>
+    <form id="addProjectForm" style="text-align: center; margin-bottom: 20px;">
+    <input class="project-card" type="text" id="projectName" placeholder="Proje Adı" required>
+    <input class="project-card"type="text" id="projectDesc" placeholder="Açıklama" required>
+    <button type="submit" class="button">Yeni Proje Ekle</button>
+</form>
+    <button id="loadBtn">Verileri API'den Getir</button>
+    
+    <div id="projectsContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  c_task_db:
+    image: postgres
+    container_name: c_task_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: taskdb
+    volumes:
+      - v_task_data:/var/lib/postgresql
+    networks:
+      - n_task_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  c_pgadmin:
+    image: dpage/pgadmin4
+    container_name: c_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80" 
+    depends_on:
+      - c_task_db
+    networks:
+      - n_task_network    
+
+  c_task_api:
+    build: 
+      context: ./src/TaskAPI
+      dockerfile: Dockerfile
+    container_name: c_task_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=c_task_db;Port=5432;Database=taskdb;Username=postgres;Password=mysecretpassword
+    depends_on:
+      c_task_db:
+        condition: service_healthy
+    networks:
+      - n_task_network
+
+  c_nginx:
+    image: nginx:latest
+    container_name: c_nginx
+    ports:
+      - "8080:80" 
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro 
+    depends_on:
+      - c_task_api
+    networks:
+      - n_task_network
+
+networks:
+  n_task_network:
+    name: n_task_network
+
+volumes:
+  v_task_data:
+    name: v_task_data
