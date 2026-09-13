@@ -86,5 +86,12 @@ namespace TaskAPI.Controllers
 
             return NoContent();
         }
+
+
+        [HttpGet("version")]
+        public IActionResult GetVersion()
+        {
+            return Ok("TaskAPI v2 - CD Otomasyonu Harika Çalışıyor! 🚀");
+        }
     }
 }
