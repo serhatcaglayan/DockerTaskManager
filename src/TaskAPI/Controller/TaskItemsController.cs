@@ -16,7 +16,7 @@ namespace TaskAPI.Controllers
         private readonly AppDbContext _context;
         private readonly IHubContext<NotificationHub> _hubContext; 
 
-        public TaskItemsController(AppDbContext context)
+        public TaskItemsController(AppDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
             _hubContext = hubContext;
