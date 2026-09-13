@@ -19,9 +19,11 @@ pipeline {
         
         stage('Deploy (Canlıya Al)') {
             steps {
-                // Jenkins içindeki Docker CLI, bilgisayarındaki Docker'a komut gönderir.
-                // Eski konteynerleri durdurur, yeni kodlarla imajı derler ve sistemi başlatır!
-                sh 'docker compose -f docker-compose.yml up -d --build'
+                // Önce eski sistemi temizle (hata vermemesi için)
+                sh 'docker compose -p taskmanager -f docker-compose.yml down'
+                
+                // Sonra yeni kodlarla temiz bir şekilde yeniden inşa et
+                sh 'docker compose -p taskmanager -f docker-compose.yml up -d --build'
             }
         }
     }
