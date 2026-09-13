@@ -56,7 +56,14 @@ services:
     networks:
       - n_task_network
     
- 
+  c_rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: c_rabbitmq
+    ports:
+      - "5672:5672"   # Mikroservislerin haberleşeceği port
+      - "15672:15672" # Tarayıcıdan gireceğimiz yönetim paneli portu
+    networks:
+      - n_task_network
 
 networks:
   n_task_network:
