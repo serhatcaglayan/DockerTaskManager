@@ -6,7 +6,7 @@ services:
     container_name: c_task_db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_PASSWORD: /run/secrets/db_password
       POSTGRES_DB: taskdb
     volumes:
       - v_task_data:/var/lib/postgresql
@@ -82,3 +82,7 @@ networks:
 volumes:
   v_task_data:
     name: v_task_data
+
+secrets:
+  db_password:
+    external: true
